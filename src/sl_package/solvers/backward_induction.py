@@ -1,7 +1,4 @@
 from .solver import Solver
-import matplotlib.pyplot as plt
-import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
 
 class BackwardInductionSolver(Solver):
     def __init__(self, game):
@@ -131,8 +128,15 @@ class BackwardInductionSolver(Solver):
     
     def visualize_equilibrium(self):
         """Visualize the game tree with equilibrium strategies highlighted."""
-        if not self.optimal_actions:
-            self.solve()
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError("matplotlib is required for visualization. Install with 'pip install sl_package[viz]'")
+        try:
+            import networkx as nx
+            from networkx.drawing.nx_agraph import graphviz_layout
+        except ImportError:
+            raise ImportError("networkx is required for visualization. Install with 'pip install sl_package[viz]'")
             
         # Create a new directed graph
         graph = nx.DiGraph()

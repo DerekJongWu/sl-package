@@ -268,9 +268,15 @@ class PureStrategyNashSolver(Solver):
     def _visualize_two_player_grid(self, player_actions, highlight_eq, highlight_index):
         """Create a grid visualization for a 2-player game with combined payoffs and no heatmap.
         Player 1 is on the right axis (vertical) and Player 2 is on the top axis (horizontal)."""
-        import matplotlib.pyplot as plt
-        import matplotlib.colors as mcolors
-        import numpy as np
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.colors as mcolors
+        except ImportError:
+            raise ImportError("matplotlib is required for visualization. Install with 'pip install sl_package[viz]'")
+        try:
+            import numpy as np
+        except ImportError:
+            raise ImportError("numpy is required for visualization. Please install numpy.")
         
         plt.figure(figsize=(6, 4))
         
@@ -395,11 +401,16 @@ class PureStrategyNashSolver(Solver):
     ## See if this needs to be fixed
     def _visualize_multi_player_table(self, player_actions, highlight_eq, highlight_index):
         """Create a grid-style visualization for games with more than 2 players."""
-        
-        import matplotlib.pyplot as plt
-        import matplotlib.colors as mcolors
-        import numpy as np
-        from matplotlib.patches import Rectangle
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.colors as mcolors
+            from matplotlib.patches import Rectangle
+        except ImportError:
+            raise ImportError("matplotlib is required for visualization. Install with 'pip install sl_package[viz]'")
+        try:
+            import numpy as np
+        except ImportError:
+            raise ImportError("numpy is required for visualization. Please install numpy.")
         
         plt.figure(figsize=(12, 6))
         ax = plt.gca()

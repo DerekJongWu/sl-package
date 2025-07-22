@@ -1,6 +1,3 @@
-import matplotlib.pyplot as plt
-import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
 from .game_node import Node
 
 class Game:
@@ -57,6 +54,15 @@ class Game:
     
     def visualize_tree(self):
         """Visualizes the game tree with improved spacing using Graphviz."""
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError("matplotlib is required for visualization. Install with 'pip install sl_package[viz]'")
+        try:
+            import networkx as nx
+            from networkx.drawing.nx_agraph import graphviz_layout
+        except ImportError:
+            raise ImportError("networkx is required for visualization. Install with 'pip install sl_package[viz]'")
         graph = nx.DiGraph()
         node_labels = {}
         
