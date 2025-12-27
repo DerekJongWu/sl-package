@@ -1,31 +1,61 @@
+from typing import List, Dict, Tuple, Union, Sequence
 from .game_node import Node
 
 class Game:
-    """Represents a game theory structure with players, actions, and payoffs."""
-    def __init__(self):
-        self.root = Node()
-        self.current_nodes = [self.root]  # Track leaf nodes for expansion
-        self.players = []  # List to track players in the order they're added
-        self.player_indices = {}  # Maps player names to their indices
-    
-    def add_player(self, player):
-        """Add a player to the game if not already present."""
+    """Represents a game theory structure with players, actions, and payoffs.
+
+    Attributes:
+        root: The root node of the game tree
+        current_nodes: List of current leaf nodes for expansion
+        players: Ordered list of player names
+        player_indices: Mapping from player names to their indices in payoff tuples
+    """
+    def __init__(self) -> None:
+        self.root: Node = Node()
+        self.current_nodes: List[Node] = [self.root]  # Track leaf nodes for expansion
+        self.players: List[str] = []  # List to track players in the order they're added
+        self.player_indices: Dict[str, int] = {}  # Maps player names to their indices
+
+    def add_player(self, player: str) -> int:
+        """Add a player to the game if not already present.
+
+        Args:
+            player: Name of the player to add
+
+        Returns:
+            The index of the player in payoff tuples
+        """
         if player not in self.player_indices:
             self.players.append(player)
             self.player_indices[player] = len(self.players) - 1
         return self.player_indices[player]
-    
-    def get_player_index(self, player):
-        """Return the index of the player in payoff tuples."""
+
+    def get_player_index(self, player: str) -> int:
+        """Return the index of the player in payoff tuples.
+
+        Args:
+            player: Name of the player
+
+        Returns:
+            The index of the player
+
+        Raises:
+            ValueError: If player is not found in the game
+        """
         if player not in self.player_indices:
             raise ValueError(f"Player {player} not found in game")
         return self.player_indices[player]
-    
-    def add_moves(self, player, actions):
-        """Adds moves for a player at all current leaf nodes."""
+
+    def add_moves(self, player: str, actions: Sequence[str]) -> None:
+        """Adds moves for a player at all current leaf nodes.
+
+        Args:
+            player: Name of the player making the moves
+            actions: Sequence of action names available to the player
+        """
         # Add player to the tracking system if not already added
         self.add_player(player)
-        
+
         new_nodes = []
         for node in self.current_nodes:
             node.players.add(player)
@@ -34,14 +64,84 @@ class Game:
                 node.add_action(action, child_node)
                 new_nodes.append(child_node)
         self.current_nodes = new_nodes
-    
-    def add_outcomes(self, outcomes):
-        """Assigns payoffs to the current leaf nodes."""
+
+    def add_outcomes(self, outcomes: Sequence[Tuple[Union[int, float], ...]]) -> None:
+        """Assigns payoffs to the current leaf nodes.
+
+        Args:
+            outcomes: Sequence of payoff tuples, one per terminal node
+
+        Raises:
+            ValueError: If number of outcomes doesn't match number of terminal nodes
+        """
         if len(outcomes) != len(self.current_nodes):
             raise ValueError("Number of outcomes must match the number of terminal nodes.")
         for node, payoff in zip(self.current_nodes, outcomes):
             node.payoff = payoff
-    
+
+    def get_terminal_nodes(self) -> List[Node]:
+        """Get all terminal nodes in the game tree.
+
+        Returns:
+            List of all terminal nodes (nodes with no actions)
+        """
+        terminal_nodes = []
+
+        def traverse(node: Node) -> None:
+            if not node.actions:
+                terminal_nodes.append(node)
+            else:
+                for child in node.actions.values():
+                    traverse(child)
+
+        traverse(self.root)
+        return terminal_nodes
+
+    def get_all_nodes(self) -> List[Node]:
+        """Get all nodes in the game tree.
+
+        Returns:
+            List of all nodes in the tree
+        """
+        all_nodes = []
+
+        def traverse(node: Node) -> None:
+            all_nodes.append(node)
+            for child in node.actions.values():
+                traverse(child)
+
+        traverse(self.root)
+        return all_nodes
+
+    def get_player_actions(self, player: str) -> List[str]:
+        """Get all unique actions available to a player across the entire game tree.
+
+        Args:
+            player: Name of the player
+
+        Returns:
+            List of all unique action names available to the player
+        """
+        actions = set()
+
+        def traverse(node: Node) -> None:
+            if player in node.players:
+                actions.update(node.actions.keys())
+            for child in node.actions.values():
+                traverse(child)
+
+        traverse(self.root)
+        return list(actions)
+
+    def __repr__(self) -> str:
+        """Return a string representation of the game."""
+        num_players = len(self.players)
+        num_terminal = len(self.get_terminal_nodes())
+        num_nodes = len(self.get_all_nodes())
+        return (f"Game(players={num_players}, "
+                f"nodes={num_nodes}, "
+                f"terminal_nodes={num_terminal})")
+
     def display_tree(self):
         """Recursively prints the game tree."""
         def recurse(node, depth=0):

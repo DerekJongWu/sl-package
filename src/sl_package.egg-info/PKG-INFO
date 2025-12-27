@@ -1,16 +1,12 @@
-Metadata-Version: 2.4
-Name: sl_package
+Metadata-Version: 2.1
+Name: sl-package
 Version: 0.1.0
 Summary: A game theory package with various solvers
 Home-page: https://github.com/yourusername/sl-package
 Author: Your Name
-Author-email: Your Name <your.email@example.com>
-Maintainer-email: Your Name <your.email@example.com>
-License: MIT
-Project-URL: Homepage, https://github.com/yourusername/sl-package
-Project-URL: Repository, https://github.com/yourusername/sl-package
-Project-URL: Bug Tracker, https://github.com/yourusername/sl-package/issues
-Keywords: game-theory,nash-equilibrium,backward-induction,mixed-strategy
+Author-email: your.email@example.com
+License: UNKNOWN
+Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
@@ -24,19 +20,8 @@ Classifier: Programming Language :: Python :: 3.11
 Classifier: Topic :: Scientific/Engineering :: Mathematics
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
-License-File: LICENSE
-Requires-Dist: numpy>=1.20.0
-Requires-Dist: scipy>=1.7.0
 Provides-Extra: dev
-Requires-Dist: pytest>=6.0; extra == "dev"
-Requires-Dist: pytest-cov>=2.0; extra == "dev"
-Requires-Dist: black>=21.0; extra == "dev"
-Requires-Dist: flake8>=3.8; extra == "dev"
-Requires-Dist: mypy>=0.800; extra == "dev"
-Dynamic: author
-Dynamic: home-page
-Dynamic: license-file
-Dynamic: requires-python
+License-File: LICENSE
 
 # SL Package
 
@@ -103,3 +88,4 @@ black src/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details. 
+

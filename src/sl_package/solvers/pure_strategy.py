@@ -1,15 +1,29 @@
+from typing import Dict, List, Tuple, Set, Any, Optional
+from functools import lru_cache
 from .solver import Solver
 from itertools import product
 
 
 class PureStrategyNashSolver(Solver):
     def __init__(self, game):
-        """Initialize the Pure Strategy Nash solver with a game."""
+        """Initialize the Pure Strategy Nash solver with a game.
+
+        Args:
+            game: The game instance to solve
+
+        Attributes:
+            debug: Enable detailed debug output
+            equilibria: List of all found Nash equilibria
+            strategy_profiles: All possible strategy profiles
+            payoff_matrix: Computed payoffs for each strategy profile
+            _player_actions_cache: Cache for player actions to avoid repeated tree traversals
+        """
         super().__init__(game)
-        self.debug = False
-        self.equilibria = []  # Store all found Nash equilibria
-        self.strategy_profiles = {}  # Store all possible strategy profiles
-        self.payoff_matrix = {}  # Store payoffs for each strategy profile
+        self.debug: bool = False
+        self.equilibria: List[Dict[str, str]] = []  # Store all found Nash equilibria
+        self.strategy_profiles: Dict[Tuple, Dict[str, str]] = {}  # Store all possible strategy profiles
+        self.payoff_matrix: Dict[Tuple, Optional[Tuple]] = {}  # Store payoffs for each strategy profile
+        self._player_actions_cache: Dict[str, List[str]] = {}  # Cache for player actions
 
     def solve(self):
         """
@@ -64,22 +78,25 @@ class PureStrategyNashSolver(Solver):
         if self.debug:
             print(f"Generated {len(self.strategy_profiles)} strategy profiles")
 
-    def _collect_player_actions(self, player):
-        """Collect all possible actions for a player throughout the game tree."""
-        actions = set()
-        
-        def traverse(node):
-            # If player is active at this node, collect their actions
-            if player in node.players:
-                actions.update(node.actions.keys())
-                
-            # Continue traversal for all children
-            for child in node.actions.values():
-                traverse(child)
-        
-        # Start traversal from the root
-        traverse(self.game.root)
-        return list(actions)
+    def _collect_player_actions(self, player: str) -> List[str]:
+        """Collect all possible actions for a player throughout the game tree.
+
+        This method uses caching to avoid repeated tree traversals for the same player.
+
+        Args:
+            player: Name of the player
+
+        Returns:
+            List of all action names available to the player
+        """
+        # Return cached result if available
+        if player in self._player_actions_cache:
+            return self._player_actions_cache[player]
+
+        # Use the Game class's utility method and cache the result
+        result = self.game.get_player_actions(player)
+        self._player_actions_cache[player] = result
+        return result
 
     def _compute_payoffs(self):
         """Compute payoffs for each strategy profile."""
